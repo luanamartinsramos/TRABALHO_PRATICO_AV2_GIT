@@ -12,7 +12,7 @@ O programa permite:
 - Inserir novos alunos com geração automática de matrícula.
 - Pesquisar alunos pelo número de matrícula ou pelo nome (sem diferenciar maiúsculas e minúsculas).
 - Editar os dados de um aluno já cadastrado (exceto a matrícula).
-- Remover um aluno do cadastro com confirmação.
+- Remover um aluno do cadastro com confirmação e excluir seu ID (Número da matrícula) Permanentemente pois cada matrícula é unica.
 - Salvar e carregar todos os dados em arquivo `.csv` usando `pandas`, mantendo os cadastros entre as execuções.
 
 Aprendizado:
