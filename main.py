@@ -114,14 +114,40 @@ def inserir_aluno(df):
     nova_matricula = gerar_matricula(df)
     print(f"\nNova matrícula gerada: {nova_matricula}")
 
-    nome = input_texto("Nome: ")
+    # Coleta dados com validações de duplicatas
+    while True:
+        nome = input_texto("Nome: ")
+        # Verifica se já existe aluno com este nome exato
+        if not df.empty and (df["nome"].str.lower() == nome.lower()).any():
+            print("ERRO: Já existe um aluno cadastrado com este nome!")
+            continue
+        break
+    
     rua = input_texto("Rua: ")
     numero = input_numero("Número: ")
     bairro = input_texto("Bairro: ")
     cidade = input_texto("Cidade: ")
     uf = input_uf("UF: ")
-    telefone = input_telefone("Telefone: ")
-    email = input_email("E-mail: ")
+    
+    while True:
+        telefone = input_telefone("Telefone: ")
+        # Remove formatação para comparar apenas números
+        telefone_limpo = re.sub(r'[^\d]', '', telefone)
+        if not df.empty:
+            # Compara com todos os telefones já cadastrados
+            telefones_existentes = df["telefone"].apply(lambda x: re.sub(r'[^\d]', '', str(x)))
+            if (telefones_existentes == telefone_limpo).any():
+                print("ERRO: Este telefone já está cadastrado para outro aluno!")
+                continue
+        break
+    
+    while True:
+        email = input_email("E-mail: ")
+        # Verifica se já existe este email (case-insensitive)
+        if not df.empty and (df["email"].str.lower() == email.lower()).any():
+            print("ERRO: Este e-mail já está cadastrado para outro aluno!")
+            continue
+        break
 
     novo_registro = {
         "matricula": nova_matricula,
