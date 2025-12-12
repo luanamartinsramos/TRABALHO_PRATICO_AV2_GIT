@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import re
 
 ARQUIVO_CSV = "alunos.csv"
 
@@ -35,7 +36,7 @@ def gerar_matricula(df):
 def menu():
     print("\n=== MENU ALUNOS ===")
     print("1 - INSERIR")
-    print("2 - PESQUISAR / EDITAR / REMOVER")
+    print("2 - PESQUISAR")
     print("3 - SAIR")
     opcao = input("Escolha uma opção: ")
     return opcao
@@ -47,18 +48,79 @@ def input_obrigatorio(mensagem):
             return valor
         print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
 
+def input_numero(mensagem):
+    while True:
+        valor = input(mensagem).strip()
+        if not valor:
+            print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
+            continue
+        if valor.isdigit():
+            return valor
+        print("ERRO: Digite apenas números!")
+
+def input_telefone(mensagem):
+    while True:
+        valor = input(mensagem).strip()
+        if not valor:
+            print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
+            continue
+        
+        telefone_limpo = re.sub(r'[^\d]', '', valor)
+        if not telefone_limpo:
+            print("ERRO: Telefone deve conter números!")
+            continue
+        if len(telefone_limpo) < 8:
+            print("ERRO: Telefone deve ter no mínimo 8 dígitos!")
+            continue
+        if len(telefone_limpo) > 11:
+            print("ERRO: Telefone deve ter no máximo 11 dígitos!")
+            continue
+        return valor  
+
+def input_email(mensagem):
+    while True:
+        valor = input(mensagem).strip()
+        if not valor:
+            print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
+            continue
+        
+        padrao_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if re.match(padrao_email, valor):
+            return valor
+        print("ERRO: E-mail inválido! Use o formato: exemplo@dominio.com")
+
+def input_uf(mensagem):
+    while True:
+        valor = input(mensagem).strip().upper()
+        if not valor:
+            print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
+            continue
+        if len(valor) == 2 and valor.isalpha():
+            return valor
+        print("ERRO: UF deve ter exatamente 2 letras! (Ex: SP, RJ, MG)")
+
+def input_texto(mensagem):
+    while True:
+        valor = input(mensagem).strip()
+        if not valor:
+            print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
+            continue
+        if any(char.isalpha() for char in valor):
+            return valor
+        print("ERRO: Este campo deve conter pelo menos uma letra!")
+
 def inserir_aluno(df):
     nova_matricula = gerar_matricula(df)
     print(f"\nNova matrícula gerada: {nova_matricula}")
 
-    nome = input_obrigatorio("Nome: ")
-    rua = input_obrigatorio("Rua: ")
-    numero = input_obrigatorio("Número: ")
-    bairro = input_obrigatorio("Bairro: ")
-    cidade = input_obrigatorio("Cidade: ")
-    uf = input_obrigatorio("UF: ")
-    telefone = input_obrigatorio("Telefone: ")
-    email = input_obrigatorio("E-mail: ")
+    nome = input_texto("Nome: ")
+    rua = input_texto("Rua: ")
+    numero = input_numero("Número: ")
+    bairro = input_texto("Bairro: ")
+    cidade = input_texto("Cidade: ")
+    uf = input_uf("UF: ")
+    telefone = input_telefone("Telefone: ")
+    email = input_email("E-mail: ")
 
     novo_registro = {
         "matricula": nova_matricula,
@@ -103,21 +165,21 @@ def editar_aluno(df, idx):
         opc = input("Escolha a opção: ")
 
         if opc == "1":
-            df.at[idx, "nome"] = input("Novo nome: ")
+            df.at[idx, "nome"] = input_texto("Novo nome: ")
         elif opc == "2":
-            df.at[idx, "rua"] = input("Nova rua: ")
+            df.at[idx, "rua"] = input_texto("Nova rua: ")
         elif opc == "3":
-            df.at[idx, "numero"] = input("Novo número: ")
+            df.at[idx, "numero"] = input_numero("Novo número: ")
         elif opc == "4":
-            df.at[idx, "bairro"] = input("Novo bairro: ")
+            df.at[idx, "bairro"] = input_texto("Novo bairro: ")
         elif opc == "5":
-            df.at[idx, "cidade"] = input("Nova cidade: ")
+            df.at[idx, "cidade"] = input_texto("Nova cidade: ")
         elif opc == "6":
-            df.at[idx, "uf"] = input("Nova UF: ")
+            df.at[idx, "uf"] = input_uf("Nova UF: ")
         elif opc == "7":
-            df.at[idx, "telefone"] = input("Novo telefone: ")
+            df.at[idx, "telefone"] = input_telefone("Novo telefone: ")
         elif opc == "8":
-            df.at[idx, "email"] = input("Novo e-mail: ")
+            df.at[idx, "email"] = input_email("Novo e-mail: ")
         elif opc == "9":
             break
         else:
@@ -192,51 +254,30 @@ def buscar_indice_aluno(df):
     mostrar_dados_aluno(linha)
     return idx
 
-def acao_pesquisar(df):
-    idx = buscar_indice_aluno(df)
-    if idx is not None:
-        input("\nPressione ENTER para continuar...")
-    return df
-
-def acao_editar_por_pesquisa(df):
-    idx = buscar_indice_aluno(df)
-    if idx is not None:
-        df = editar_aluno(df, idx)
-        salvar_dados(df)
-    return df
-
-def acao_remover_por_pesquisa(df):
-    idx = buscar_indice_aluno(df)
-    if idx is not None:
-        df = remover_aluno(df, idx)
-        salvar_dados(df)
-        print("\nDados salvos com sucesso!")
-    return df
-
 def menu_aluno(df):
     if df.empty:
         print("Nenhum aluno cadastrado.")
         return df
 
-    while True:
-        print("\n=== MENU ALUNO ===")
-        print("1 - PESQUISAR ALUNO")
-        print("2 - EDITAR ALUNO")
-        print("3 - REMOVER ALUNO")
-        print("4 - VOLTAR AO MENU PRINCIPAL")
-        opc = input("Escolha uma opção: ")
-
-        if opc == "1":
-            df = acao_pesquisar(df)
-        elif opc == "2":
-            df = acao_editar_por_pesquisa(df)
-        elif opc == "3":
-            df = acao_remover_por_pesquisa(df)
-        elif opc == "4":
-            break
-        else:
-            print("Opção inválida.")
-
+    idx = buscar_indice_aluno(df)
+    if idx is None:
+        return df
+    
+    # Pergunta se deseja editar
+    editar = input("\nDeseja EDITAR algum dado deste aluno? (S/N): ")
+    if editar.upper() == "S":
+        df = editar_aluno(df, idx)
+        salvar_dados(df)
+        print("\nDados salvos com sucesso!")
+        return df
+    
+    # Pergunta se deseja remover
+    remover = input("\nDeseja REMOVER este aluno? (S/N): ")
+    if remover.upper() == "S":
+        df = remover_aluno(df, idx)
+        salvar_dados(df)
+        print("\nDados salvos com sucesso!")
+    
     return df
 
 def main():
