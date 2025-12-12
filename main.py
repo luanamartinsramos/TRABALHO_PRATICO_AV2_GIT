@@ -1,9 +1,10 @@
+# Sistema de Cadastro de Alunos
 import pandas as pd
 import os
 import re
 
 ARQUIVO_CSV = "alunos.csv"
-
+# Define os campos do DataFrame
 CAMPOS = [
     "matricula",
     "nome",
@@ -15,7 +16,7 @@ CAMPOS = [
     "telefone",
     "email"
 ]
-
+# Carrega os dados do arquivo CSV ou cria um DataFrame vazio
 def carregar_dados():
     if os.path.exists(ARQUIVO_CSV):
         df = pd.read_csv(ARQUIVO_CSV)
@@ -24,15 +25,15 @@ def carregar_dados():
     else:
         df = pd.DataFrame(columns=CAMPOS)
     return df
-
+# Salva os dados no arquivo CSV
 def salvar_dados(df):
     df.to_csv(ARQUIVO_CSV, index=False)
-
+# Gera uma nova matrícula única
 def gerar_matricula(df):
     if df.empty:
         return 1
     return int(df["matricula"].max()) + 1
-
+# Exibe o menu principal
 def menu():
     print("\n=== MENU ALUNOS ===")
     print("1 - INSERIR")
@@ -40,14 +41,14 @@ def menu():
     print("3 - SAIR")
     opcao = input("Escolha uma opção: ")
     return opcao
-
+# Funções de entrada com validação
 def input_obrigatorio(mensagem):
     while True:
         valor = input(mensagem).strip()
         if valor:
             return valor
         print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
-
+# Função para entrada de número com validação
 def input_numero(mensagem):
     while True:
         valor = input(mensagem).strip()
@@ -57,7 +58,7 @@ def input_numero(mensagem):
         if valor.isdigit():
             return valor
         print("ERRO: Digite apenas números!")
-
+# Função para entrada de telefone com validação
 def input_telefone(mensagem):
     while True:
         valor = input(mensagem).strip()
@@ -76,7 +77,7 @@ def input_telefone(mensagem):
             print("ERRO: Telefone deve ter no máximo 11 dígitos!")
             continue
         return valor  
-
+# Função para entrada de e-mail com validação
 def input_email(mensagem):
     while True:
         valor = input(mensagem).strip()
@@ -88,7 +89,7 @@ def input_email(mensagem):
         if re.match(padrao_email, valor):
             return valor
         print("ERRO: E-mail inválido! Use o formato: exemplo@dominio.com")
-
+# Função para entrada de UF com validação
 def input_uf(mensagem):
     while True:
         valor = input(mensagem).strip().upper()
@@ -98,7 +99,7 @@ def input_uf(mensagem):
         if len(valor) == 2 and valor.isalpha():
             return valor
         print("ERRO: UF deve ter exatamente 2 letras! (Ex: SP, RJ, MG)")
-
+# Função para entrada de texto com validação
 def input_texto(mensagem):
     while True:
         valor = input(mensagem).strip()
@@ -108,7 +109,7 @@ def input_texto(mensagem):
         if any(char.isalpha() for char in valor):
             return valor
         print("ERRO: Este campo deve conter pelo menos uma letra!")
-
+# Função para inserir um novo aluno
 def inserir_aluno(df):
     nova_matricula = gerar_matricula(df)
     print(f"\nNova matrícula gerada: {nova_matricula}")
@@ -137,7 +138,7 @@ def inserir_aluno(df):
     df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
     print("Aluno cadastrado com sucesso!")
     return df
-
+# Função para mostrar os dados de um aluno
 def mostrar_dados_aluno(linha):
     print("\n=== DADOS DO ALUNO ===")
     print(f"Matrícula: {linha['matricula']}")
@@ -149,7 +150,7 @@ def mostrar_dados_aluno(linha):
     print(f"UF: {linha['uf']}")
     print(f"Telefone: {linha['telefone']}")
     print(f"E-mail: {linha['email']}")
-
+# Função para editar os dados de um aluno
 def editar_aluno(df, idx):
     while True:
         print("\nQual dado deseja editar?")
@@ -189,7 +190,7 @@ def editar_aluno(df, idx):
         print("Dado atualizado com sucesso!")
 
     return df
-
+# Função para remover um aluno
 def remover_aluno(df, idx):
     confirma = input("Tem certeza que deseja remover este aluno? (S/N): ")
     if confirma.upper() == "S":
@@ -200,7 +201,7 @@ def remover_aluno(df, idx):
     return df
 
 
-
+# Função para buscar o índice do aluno
 def buscar_indice_aluno(df):
     print("\nPesquisar por:")
     print("1 - Matrícula")
@@ -253,7 +254,7 @@ def buscar_indice_aluno(df):
     linha = df.loc[idx]
     mostrar_dados_aluno(linha)
     return idx
-
+# Menu para operações com o aluno encontrado
 def menu_aluno(df):
     if df.empty:
         print("Nenhum aluno cadastrado.")
@@ -279,7 +280,7 @@ def menu_aluno(df):
         print("\nDados salvos com sucesso!")
     
     return df
-
+# Função principal
 def main():
     df = carregar_dados()
 
