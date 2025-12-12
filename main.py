@@ -51,3 +51,44 @@ def inserir_aluno(df):
     telefone = input("Telefone: ")
     email = input("E-mail: ")
 
+    novo_registro = {
+        "matricula": nova_matricula,
+        "nome": nome,
+        "rua": rua,
+        "numero": numero,
+        "bairro": bairro,
+        "cidade": cidade,
+        "uf": uf,
+        "telefone": telefone,
+        "email": email
+    }
+
+    df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
+    print("Aluno cadastrado com sucesso!")
+    return df
+
+
+def main():
+    
+    
+    df = carregar_dados()
+
+    while True:
+        opcao = menu()
+
+        if opcao == "1":
+            df = inserir_aluno(df)
+            salvar_dados(df)
+
+        elif opcao == "2":
+            
+            pass
+        elif opcao == "3":
+            print("Saindo...")
+            salvar_dados(df)
+            break
+        else:
+            print("Opção inválida.")
+
+if __name__ == "__main__":
+    main()
