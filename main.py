@@ -40,18 +40,25 @@ def menu():
     opcao = input("Escolha uma opção: ")
     return opcao
 
+def input_obrigatorio(mensagem):
+    while True:
+        valor = input(mensagem).strip()
+        if valor:
+            return valor
+        print("ERRO: Este campo não pode ficar vazio! Por favor, preencha.")
+
 def inserir_aluno(df):
     nova_matricula = gerar_matricula(df)
     print(f"\nNova matrícula gerada: {nova_matricula}")
 
-    nome = input("Nome: ")
-    rua = input("Rua: ")
-    numero = input("Número: ")
-    bairro = input("Bairro: ")
-    cidade = input("Cidade: ")
-    uf = input("UF: ")
-    telefone = input("Telefone: ")
-    email = input("E-mail: ")
+    nome = input_obrigatorio("Nome: ")
+    rua = input_obrigatorio("Rua: ")
+    numero = input_obrigatorio("Número: ")
+    bairro = input_obrigatorio("Bairro: ")
+    cidade = input_obrigatorio("Cidade: ")
+    uf = input_obrigatorio("UF: ")
+    telefone = input_obrigatorio("Telefone: ")
+    email = input_obrigatorio("E-mail: ")
 
     novo_registro = {
         "matricula": nova_matricula,
